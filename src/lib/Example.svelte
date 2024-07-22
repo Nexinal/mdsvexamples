@@ -1,19 +1,29 @@
-<script>
-  export let src = undefined
-  export let meta = undefined
+<svelte:options runes={true} />
+<script lang="ts">
+  import type { Snippet } from "svelte"
+  
+  let {
+    src = undefined,
+    meta =undefined,
+    code,
+    example
+  } : {
+    src: any | undefined,
+    meta: any | undefined,
+    code: Snippet,
+    example:Snippet
+  } = $props();
 
-  // suppress vite-plugin-svelte warning about unused props
-  $: src, meta
 </script>
 
 <div class="root">
   <div class="container">
     <div class="example-wrapper">
       <div class="example">
-        <slot name="example" />
+        {@render example?.()}
       </div>
     </div>
-    <pre class="language-svelte"><slot name="code" /></pre>
+    <pre class="language-svelte">{@render code?.()}</pre>
   </div>
 </div>
 

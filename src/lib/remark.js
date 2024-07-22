@@ -1,8 +1,8 @@
+import 'prism-svelte'
+import Prism from 'prismjs'
 import { visit } from 'unist-util-visit'
 import path from 'upath'
 import { fileURLToPath } from 'url'
-import Prism from 'prismjs'
-import 'prism-svelte'
 import { escape } from './util.js'
 
 const _dirname =
@@ -79,7 +79,7 @@ export default function (options = {}) {
       }
 
       if (!example.csr) {
-        scripts += `import ${EXAMPLE_COMPONENT_PREFIX}${i} from "${EXAMPLE_MODULE_PREFIX}${i}.svelte";\n`
+        scripts += `import ${EXAMPLE_COMPONENT_PREFIX}${i} from "${filename}${EXAMPLE_MODULE_PREFIX}${i}.svelte";\n`
       }
     })
 
@@ -155,18 +155,20 @@ function createExampleComponent(value, meta, index) {
 						src={${props.src}} 
 						meta={${props.meta}}
 					>
-						<slot slot="example">${
+          {#snippet example()}
+						${
               meta.csr
-                ? `
-								{#if typeof window !== 'undefined'}
-									{#await import("${EXAMPLE_MODULE_PREFIX}${index}.svelte") then module}
-										{@const ${mdsvexampleComponentName} = module.default}
-										<${mdsvexampleComponentName} />
-									{/await}
-								{/if}`
-                : `<${mdsvexampleComponentName} />`
-            }</slot>
-						<slot slot="code">{@html ${JSON.stringify(highlighted)}}</slot>
+              ? `
+                {#if typeof window !== 'undefined'}
+                  {#await import("${EXAMPLE_MODULE_PREFIX}${index}.svelte") then module}
+                    {@const ${mdsvexampleComponentName} = module.default}
+                      <${mdsvexampleComponentName} />
+                  {/await}
+                {/if}`
+              : `<${mdsvexampleComponentName} />`
+            }
+          {/snippet}
+          {#snippet code()}{@html ${JSON.stringify(highlighted)}}{/snippet}
 			</Example>`
 }
 
